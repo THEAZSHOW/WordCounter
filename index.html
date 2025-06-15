@@ -67,6 +67,16 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const textInput = document.getElementById('text-input');
+
+             // Load saved text on page load
+textInput.value = localStorage.getItem('savedText') || '';
+
+// Save text on input
+textInput.addEventListener('input', () => {
+    localStorage.setItem('savedText', textInput.value);
+});
+
+            
             const highlighter = document.getElementById('highlighter');
 
             // Header counters
