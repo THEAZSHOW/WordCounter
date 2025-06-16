@@ -4,7 +4,7 @@
 -------------------------------------------------- */
 :root {
     --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    --font-mono: "Fira Code", "Courier New", Courier, monospace;
+    --font-serif: "Georgia", serif; /* Adding a serif font for the editor */
 
     --bg-primary: #f4f7f9;
     --bg-secondary: #ffffff;
@@ -12,16 +12,14 @@
     --text-primary: #1a202c;
     --text-secondary: #718096;
     --accent-primary: #4299e1; /* A nice, modern blue */
-    --accent-highlight: #ffc857; /* A warm yellow for highlighting */
+    --accent-highlight: #ffecb3; /* A softer yellow for highlighting */
     --shadow-color: rgba(0, 0, 0, 0.05);
 
     --border-radius: 8px;
     --transition-speed: 0.2s;
 }
 
-*, *::before, *::after {
-    box-sizing: border-box;
-}
+*, *::before, *::after { box-sizing: border-box; }
 
 body {
     font-family: var(--font-sans);
@@ -36,90 +34,99 @@ body {
 -------------------------------------------------- */
 .main-header {
     background-color: var(--bg-secondary);
-    padding: 1.5rem 2.5rem;
+    padding: 1rem 2.5rem;
     border-bottom: 1px solid var(--border-color);
 }
-
 .main-header h1 {
     margin: 0;
-    font-size: 2.25rem;
+    font-size: 1.5rem;
     font-weight: 300;
     color: var(--text-secondary);
 }
-
 .main-header h1 span {
     font-weight: 600;
     color: var(--text-primary);
 }
 
-.main-header p {
-    margin: 0.25rem 0 0;
-    font-size: 1rem;
-    color: var(--text-secondary);
-}
-
 .container {
     display: flex;
     flex-wrap: wrap;
-    padding: 2rem;
-    gap: 2rem;
+    padding: 1.5rem;
+    gap: 1.5rem;
     align-items: flex-start;
 }
 
-/* 3. EDITOR PANEL & TEXTAREA
+/* 3. RIBBON UI
+-------------------------------------------------- */
+.ribbon {
+    display: flex;
+    flex-wrap: wrap;
+    background-color: #f8fafc;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-bottom: none;
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
+}
+.ribbon-group {
+    display: flex;
+    align-items: center;
+    border-right: 1px solid var(--border-color);
+    padding: 0 0.5rem;
+    margin-right: 0.5rem;
+}
+.ribbon-group:last-child {
+    border-right: none;
+    margin-right: 0;
+}
+.ribbon-btn {
+    background: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    padding: 0.5rem;
+    margin: 0.125rem;
+    cursor: pointer;
+    font-size: 1rem;
+    color: var(--text-secondary);
+    transition: all var(--transition-speed) ease;
+}
+.ribbon-btn:hover {
+    background-color: #e2e8f0;
+    color: var(--text-primary);
+}
+.ribbon-btn.is-active {
+    background-color: #dbeafe;
+    color: var(--accent-primary);
+}
+
+
+/* 4. EDITOR PANEL & EDITABLE AREA
 -------------------------------------------------- */
 .editor-panel {
     flex: 3;
     min-width: 400px;
+    display: flex;
+    flex-direction: column;
 }
 
-.textarea-container {
-    position: relative;
+.editor-area {
     width: 100%;
-    height: 75vh;
-    border-radius: var(--border-radius);
-    box-shadow: 0 4px 6px -1px var(--shadow-color), 0 2px 4px -1px var(--shadow-color);
-    overflow: hidden; /* Ensures children respect the border-radius */
-}
-
-#text-input, #highlighter {
-    margin: 0;
-    padding: 1.5rem;
-    font-family: var(--font-mono);
+    height: 70vh;
+    padding: 1.5rem 2rem;
+    font-family: var(--font-serif);
     font-size: 16px;
     line-height: 1.7;
-    width: 100%;
-    height: 100%;
-    box-sizing: border-box;
-    border: 1px solid var(--border-color);
     background-color: var(--bg-secondary);
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    overflow: auto;
-    transition: border-color var(--transition-speed) ease;
+    border: 1px solid var(--border-color);
+    border-bottom-left-radius: var(--border-radius);
+    border-bottom-right-radius: var(--border-radius);
+    box-shadow: 0 4px 6px -1px var(--shadow-color);
+    overflow-y: auto;
+    outline: none; /* remove focus outline */
 }
-
-#text-input {
-    position: relative;
-    z-index: 2;
-    color: var(--text-primary);
-    background: transparent;
-    resize: none;
-}
-
-#text-input:focus {
-    outline: none;
+.editor-area:focus-within {
     border-color: var(--accent-primary);
-    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5); /* Focus ring */
-}
-
-#highlighter {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 1;
-    color: transparent;
-    pointer-events: none;
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
 }
 
 .highlight {
@@ -127,22 +134,20 @@ body {
     border-radius: 3px;
 }
 
-/* 4. SIDEBAR & CONTENT SECTIONS
+
+/* 5. SIDEBAR & CONTENT SECTIONS (Mostly unchanged)
 -------------------------------------------------- */
 .sidebar {
     flex: 2;
     min-width: 320px;
 }
-
 .sidebar-section {
     background-color: var(--bg-secondary);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
     margin-bottom: 1.5rem;
-    box-shadow: 0 4px 6px -1px var(--shadow-color), 0 2px 4px -1px var(--shadow-color);
-    transition: box-shadow var(--transition-speed) ease;
+    box-shadow: 0 4px 6px -1px var(--shadow-color);
 }
-
 .sidebar-section summary {
     font-weight: 600;
     cursor: pointer;
@@ -152,23 +157,10 @@ body {
     position: relative;
     transition: background-color var(--transition-speed) ease;
 }
-
-.sidebar-section summary:hover {
-    background-color: #fafdff;
-}
-
-.sidebar-section[open] > summary {
-    border-bottom-color: var(--border-color);
-}
-
-.sidebar-section:not([open]) > summary {
-    border-bottom-color: transparent;
-}
-
-.sidebar-section summary::-webkit-details-marker {
-    display: none;
-}
-
+.sidebar-section summary:hover { background-color: #fafdff; }
+.sidebar-section[open] > summary { border-bottom-color: var(--border-color;); }
+.sidebar-section:not([open]) > summary { border-bottom-color: transparent; }
+.sidebar-section summary::-webkit-details-marker { display: none; }
 .sidebar-section summary::after {
     content: '▼';
     position: absolute;
@@ -177,28 +169,15 @@ body {
     color: var(--text-secondary);
     transition: transform var(--transition-speed) ease-in-out;
 }
-
-.sidebar-section[open] > summary::after {
-    transform: rotate(180deg);
-}
-
-.section-content {
-    padding: 1.5rem;
-}
-
-/* 5. SPECIFIC SIDEBAR COMPONENTS
--------------------------------------------------- */
+.sidebar-section[open] > summary::after { transform: rotate(180deg); }
+.section-content { padding: 1.5rem; }
 .details-grid {
     display: grid;
     grid-template-columns: 1fr auto;
     gap: 1rem;
     font-size: 0.95rem;
 }
-
-.details-grid span:nth-child(odd) {
-    color: var(--text-secondary);
-}
-
+.details-grid span:nth-child(odd) { color: var(--text-secondary); }
 .details-grid span:nth-child(even) {
     background-color: #edf2f7;
     color: var(--text-primary);
@@ -208,14 +187,12 @@ body {
     font-size: 0.9em;
     justify-self: end;
 }
-
 .density-tabs {
     display: flex;
     border-bottom: 1px solid var(--border-color);
     padding: 0 0.5rem;
     background-color: #f8fafc;
 }
-
 .tab-btn {
     flex: 1;
     padding: 0.75rem;
@@ -228,25 +205,18 @@ body {
     border-bottom: 3px solid transparent;
     transition: all var(--transition-speed) ease;
 }
-
-.tab-btn:hover {
-    color: var(--text-primary);
-    background-color: #f1f5f9;
-}
-
+.tab-btn:hover { color: var(--text-primary); background-color: #f1f5f9; }
 .tab-btn.active {
     font-weight: 600;
     color: var(--accent-primary);
     border-bottom-color: var(--accent-primary);
 }
-
 .density-list {
     max-height: 280px;
     overflow-y: auto;
-    margin-right: -1.5rem; /* Hide original scrollbar */
-    padding-right: 1.5rem; /* Add padding for custom scrollbar */
+    margin-right: -1.5rem;
+    padding-right: 1.5rem;
 }
-
 .density-item {
     display: flex;
     justify-content: space-between;
@@ -258,15 +228,9 @@ body {
     border-radius: 4px;
     transition: background-color var(--transition-speed) ease;
 }
-
 .density-item:last-child { border-bottom: none; }
-.density-item:hover { background-color: #e3f2fd; } /* Light blue hover */
-
-.density-item .phrase {
-    color: var(--text-primary);
-    word-break: break-all;
-}
-
+.density-item:hover { background-color: #e3f2fd; }
+.density-item .phrase { color: var(--text-primary); word-break: break-all; }
 .density-item .count {
     background-color: #e2e8f0;
     color: var(--text-secondary);
@@ -277,20 +241,7 @@ body {
     margin-left: 1rem;
     flex-shrink: 0;
 }
-
-/* 6. CUSTOM SCROLLBARS
--------------------------------------------------- */
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-::-webkit-scrollbar-track {
-    background: transparent;
-}
-::-webkit-scrollbar-thumb {
-    background: #cbd5e0;
-    border-radius: 10px;
-}
-::-webkit-scrollbar-thumb:hover {
-    background: #a0aec0;
-}
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #a0aec0; }
