@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Word Counter & Text Editor</title>
+    <title>Word Counter & Rich Text Editor</title>
     <!-- Add Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
     <!-- Your CSS -->
@@ -25,11 +25,41 @@
                     <button id="btn-undo" class="ribbon-btn" title="Undo"><i class="fas fa-undo"></i></button>
                     <button id="btn-redo" class="ribbon-btn" title="Redo"><i class="fas fa-redo"></i></button>
                 </div>
+                <!-- NEW FONT CONTROLS GROUP -->
+                <div class="ribbon-group">
+                    <select id="font-family-select" class="ribbon-select" title="Font Family">
+                        <option value="Arial, sans-serif">Arial</option>
+                        <option value="Verdana, sans-serif">Verdana</option>
+                        <option value="Georgia, serif">Georgia</option>
+                        <option value="Times New Roman, serif">Times New Roman</option>
+                        <option value="Courier New, monospace">Courier New</option>
+                    </select>
+                    <select id="font-size-select" class="ribbon-select" title="Font Size">
+                        <option value="1">1 (8pt)</option>
+                        <option value="2">2 (10pt)</option>
+                        <option value="3" selected>3 (12pt)</option>
+                        <option value="4">4 (14pt)</option>
+                        <option value="5">5 (18pt)</option>
+                        <option value="6">6 (24pt)</option>
+                        <option value="7">7 (36pt)</option>
+                    </select>
+                </div>
                 <div class="ribbon-group">
                     <button id="btn-bold" class="ribbon-btn" title="Bold"><i class="fas fa-bold"></i></button>
                     <button id="btn-italic" class="ribbon-btn" title="Italic"><i class="fas fa-italic"></i></button>
                     <button id="btn-underline" class="ribbon-btn" title="Underline"><i class="fas fa-underline"></i></button>
                     <button id="btn-strikethrough" class="ribbon-btn" title="Strikethrough"><i class="fas fa-strikethrough"></i></button>
+                </div>
+                <!-- NEW COLOR CONTROLS GROUP -->
+                 <div class="ribbon-group">
+                    <label for="font-color-picker" class="ribbon-color-label" title="Font Color">
+                        <i class="fas fa-font" style="border-bottom: 3px solid black;"></i>
+                        <input type="color" id="font-color-picker" class="ribbon-color-picker">
+                    </label>
+                     <label for="highlight-color-picker" class="ribbon-color-label" title="Highlight Color">
+                        <i class="fas fa-highlighter" style="border-bottom: 3px solid yellow;"></i>
+                        <input type="color" id="highlight-color-picker" class="ribbon-color-picker" value="#ffff00">
+                    </label>
                 </div>
                 <div class="ribbon-group">
                     <button id="btn-align-left" class="ribbon-btn" title="Align Left"><i class="fas fa-align-left"></i></button>
@@ -43,11 +73,11 @@
                 </div>
             </div>
 
-            <!-- THE NEW EDITABLE DIV -->
             <div id="text-input" class="editor-area" contenteditable="true" spellcheck="false"></div>
         </div>
 
         <aside class="sidebar">
+            <!-- Sidebar content remains the same -->
             <details class="sidebar-section" open>
                 <summary>Details</summary>
                 <div class="section-content">
@@ -61,7 +91,6 @@
                     </div>
                 </div>
             </details>
-
             <details class="sidebar-section" open>
                 <summary>Keyword Density</summary>
                 <div class="density-tabs">
@@ -78,7 +107,6 @@
         </aside>
     </main>
 
-    <!-- Load external script -->
     <script src="script.js"></script>
 </body>
 </html>
