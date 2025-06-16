@@ -1,26 +1,21 @@
-/* --- MODERN & BEAUTIFUL STYLESHEET --- */
+/* --- MODERN & BEAUTIFUL STYLESHEET (v3) --- */
 
 /* 1. ROOT VARIABLES & GLOBAL RESETS
 -------------------------------------------------- */
 :root {
     --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    --font-serif: "Georgia", serif; /* Adding a serif font for the editor */
-
     --bg-primary: #f4f7f9;
     --bg-secondary: #ffffff;
     --border-color: #e2e8f0;
     --text-primary: #1a202c;
     --text-secondary: #718096;
-    --accent-primary: #4299e1; /* A nice, modern blue */
-    --accent-highlight: #ffecb3; /* A softer yellow for highlighting */
+    --accent-primary: #4299e1;
+    --accent-highlight: #fff2ab; /* Softer yellow for density highlight */
     --shadow-color: rgba(0, 0, 0, 0.05);
-
     --border-radius: 8px;
     --transition-speed: 0.2s;
 }
-
 *, *::before, *::after { box-sizing: border-box; }
-
 body {
     font-family: var(--font-sans);
     background-color: var(--bg-primary);
@@ -47,7 +42,6 @@ body {
     font-weight: 600;
     color: var(--text-primary);
 }
-
 .container {
     display: flex;
     flex-wrap: wrap;
@@ -61,6 +55,7 @@ body {
 .ribbon {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     background-color: #f8fafc;
     padding: 0.5rem;
     border: 1px solid var(--border-color);
@@ -98,7 +93,38 @@ body {
     background-color: #dbeafe;
     color: var(--accent-primary);
 }
-
+.ribbon-select {
+    background-color: var(--bg-secondary);
+    border: 1px solid #cbd5e0;
+    border-radius: 4px;
+    padding: 0.4rem;
+    margin: 0 0.25rem;
+    font-size: 0.85rem;
+}
+.ribbon-color-label {
+    position: relative;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 4px;
+    margin: 0.125rem;
+}
+.ribbon-color-label i {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    pointer-events: none; /* Let clicks pass through to the input */
+}
+.ribbon-color-label:hover {
+    background-color: #e2e8f0;
+}
+.ribbon-color-picker {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
 
 /* 4. EDITOR PANEL & EDITABLE AREA
 -------------------------------------------------- */
@@ -108,12 +134,11 @@ body {
     display: flex;
     flex-direction: column;
 }
-
 .editor-area {
     width: 100%;
     height: 70vh;
     padding: 1.5rem 2rem;
-    font-family: var(--font-serif);
+    font-family: "Georgia", serif; /* Default font */
     font-size: 16px;
     line-height: 1.7;
     background-color: var(--bg-secondary);
@@ -122,25 +147,21 @@ body {
     border-bottom-right-radius: var(--border-radius);
     box-shadow: 0 4px 6px -1px var(--shadow-color);
     overflow-y: auto;
-    outline: none; /* remove focus outline */
+    outline: none;
 }
 .editor-area:focus-within {
     border-color: var(--accent-primary);
     box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
 }
-
-.highlight {
+.density-highlight { /* For keyword density */
     background-color: var(--accent-highlight);
     border-radius: 3px;
+    transition: background-color 0.3s;
 }
 
-
-/* 5. SIDEBAR & CONTENT SECTIONS (Mostly unchanged)
+/* 5. SIDEBAR & CONTENT SECTIONS
 -------------------------------------------------- */
-.sidebar {
-    flex: 2;
-    min-width: 320px;
-}
+.sidebar { flex: 2; min-width: 320px; }
 .sidebar-section {
     background-color: var(--bg-secondary);
     border: 1px solid var(--border-color);
@@ -149,97 +170,64 @@ body {
     box-shadow: 0 4px 6px -1px var(--shadow-color);
 }
 .sidebar-section summary {
-    font-weight: 600;
-    cursor: pointer;
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid var(--border-color);
-    list-style: none;
-    position: relative;
+    font-weight: 600; cursor: pointer; padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border-color); list-style: none; position: relative;
     transition: background-color var(--transition-speed) ease;
 }
 .sidebar-section summary:hover { background-color: #fafdff; }
-.sidebar-section[open] > summary { border-bottom-color: var(--border-color;); }
+.sidebar-section[open] > summary { border-bottom-color: var(--border-color); }
 .sidebar-section:not([open]) > summary { border-bottom-color: transparent; }
 .sidebar-section summary::-webkit-details-marker { display: none; }
 .sidebar-section summary::after {
-    content: '▼';
-    position: absolute;
-    right: 1.5rem;
-    font-size: 0.8em;
-    color: var(--text-secondary);
-    transition: transform var(--transition-speed) ease-in-out;
+    content: '▼'; position: absolute; right: 1.5rem; font-size: 0.8em;
+    color: var(--text-secondary); transition: transform var(--transition-speed) ease-in-out;
 }
 .sidebar-section[open] > summary::after { transform: rotate(180deg); }
 .section-content { padding: 1.5rem; }
 .details-grid {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 1rem;
-    font-size: 0.95rem;
+    display: grid; grid-template-columns: 1fr auto;
+    gap: 1rem; font-size: 0.95rem;
 }
 .details-grid span:nth-child(odd) { color: var(--text-secondary); }
 .details-grid span:nth-child(even) {
-    background-color: #edf2f7;
-    color: var(--text-primary);
-    padding: 0.25rem 0.6rem;
-    border-radius: 9999px;
-    font-weight: 600;
-    font-size: 0.9em;
-    justify-self: end;
+    background-color: #edf2f7; color: var(--text-primary); padding: 0.25rem 0.6rem;
+    border-radius: 9999px; font-weight: 600; font-size: 0.9em; justify-self: end;
 }
 .density-tabs {
-    display: flex;
-    border-bottom: 1px solid var(--border-color);
-    padding: 0 0.5rem;
-    background-color: #f8fafc;
+    display: flex; border-bottom: 1px solid var(--border-color);
+    padding: 0 0.5rem; background-color: #f8fafc;
 }
 .tab-btn {
-    flex: 1;
-    padding: 0.75rem;
-    border: none;
-    background-color: transparent;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: var(--text-secondary);
-    border-bottom: 3px solid transparent;
-    transition: all var(--transition-speed) ease;
+    flex: 1; padding: 0.75rem; border: none; background-color: transparent;
+    cursor: pointer; font-size: 0.9rem; font-weight: 500; color: var(--text-secondary);
+    border-bottom: 3px solid transparent; transition: all var(--transition-speed) ease;
 }
 .tab-btn:hover { color: var(--text-primary); background-color: #f1f5f9; }
 .tab-btn.active {
-    font-weight: 600;
-    color: var(--accent-primary);
+    font-weight: 600; color: var(--accent-primary);
     border-bottom-color: var(--accent-primary);
 }
 .density-list {
-    max-height: 280px;
-    overflow-y: auto;
-    margin-right: -1.5rem;
-    padding-right: 1.5rem;
+    max-height: 280px; overflow-y: auto;
+    margin-right: -1.5rem; padding-right: 1.5rem;
 }
 .density-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem 0.5rem;
-    border-bottom: 1px solid #f1f5f9;
-    font-size: 0.9rem;
-    cursor: pointer;
-    border-radius: 4px;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.75rem 0.5rem; border-bottom: 1px solid #f1f5f9;
+    font-size: 0.9rem; cursor: pointer; border-radius: 4px;
     transition: background-color var(--transition-speed) ease;
 }
 .density-item:last-child { border-bottom: none; }
 .density-item:hover { background-color: #e3f2fd; }
+.density-item.active-highlight {
+    background-color: #cce7ff;
+    font-weight: bold;
+}
 .density-item .phrase { color: var(--text-primary); word-break: break-all; }
 .density-item .count {
-    background-color: #e2e8f0;
-    color: var(--text-secondary);
-    padding: 0.2rem 0.6rem;
-    border-radius: 9999px;
-    font-weight: 600;
-    font-size: 0.85em;
-    margin-left: 1rem;
-    flex-shrink: 0;
+    background-color: #e2e8f0; color: var(--text-secondary); padding: 0.2rem 0.6rem;
+    border-radius: 9999px; font-weight: 600; font-size: 0.85em;
+    margin-left: 1rem; flex-shrink: 0;
 }
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
