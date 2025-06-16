@@ -1,9 +1,6 @@
-// --- START OF FILE script.js (CORRECTED & COMPLETE) ---
-
 document.addEventListener('DOMContentLoaded', () => {
     // --- ELEMENT SELECTION ---
     const textInput = document.getElementById('text-input');
-    const highlighter = document.getElementById('highlighter');
 
     // Header counters
     const wordCountEl = document.getElementById('word-count');
@@ -21,8 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const densityListEl = document.getElementById('density-list');
     const densityTabsContainer = document.querySelector('.density-tabs');
 
-    let currentNgramSize = 2; // Default to bigrams (x2)
-    let currentHighlightedPhrase = null;
+    let currentNgramSize = 2;
 
     // --- UTILITY FUNCTIONS ---
     const formatTime = (seconds) => {
@@ -35,23 +31,16 @@ document.addEventListener('DOMContentLoaded', () => {
         return result.trim();
     };
 
-    const escapeRegExp = (string) => {
-        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    };
-
-    const escapeHTML = (str) => {
-        return str.replace(/&/g, "&").replace(/</g, "<").replace(/>/g, ">");
-    };
-
     // --- CORE LOGIC ---
     const analyzeText = () => {
-        const text = textInput.value;
-        
+        const text = textInput.innerText; // Use innerText for plain text content
+        const htmlContent = textInput.innerHTML;
+
         // 1. Update Details Panel
         const words = text.trim().split(/\s+/).filter(Boolean);
         const wordCount = text.trim() === '' ? 0 : words.length;
         const charCount = text.length;
-        const paragraphCount = text.split('\n').filter(line => line.trim() !== '').length || (text.trim() ? 1 : 0);
+        const paragraphCount = htmlContent.split(/<(p|div|br)[^>]*>/gi).filter(s => s.trim().length > 0).length || (text.trim() ? 1 : 0);
         const sentenceCount = (text.match(/[.!?]+|\n+/g) || []).length || (text.trim() ? 1 : 0);
         
         wordCountEl.textContent = wordCount;
@@ -67,8 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // 2. Update Keyword Density
         updateDensity(words);
 
-        // 3. Update Highlighter
-        updateHighlighter();
+        // 3. Save to localStorage
+        localStorage.setItem('savedText', htmlContent); // Save the HTML to preserve formatting
     };
 
     const updateDensity = (words) => {
@@ -86,61 +75,89 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const sortedNgrams = [...ngrams.entries()]
-            .filter(([phrase, count]) => count > (currentNgramSize > 1 ? 1 : 0) ) // Only show repeated phrases for x2, x3
+            .filter(([phrase, count]) => count > (currentNgramSize > 1 ? 1 : 0) )
             .sort((a, b) => b[1] - a[1]);
 
         sortedNgrams.forEach(([phrase, count]) => {
             const item = document.createElement('div');
             item.className = 'density-item';
-            item.innerHTML = `<span class="phrase">${escapeHTML(phrase)}</span><span class="count">${count}</span>`;
+            item.innerHTML = `<span class="phrase">${phrase}</span><span class="count">${count}</span>`;
             item.addEventListener('click', () => {
-                // If the same phrase is clicked again, un-highlight it
-                currentHighlightedPhrase = currentHighlightedPhrase === phrase ? null : phrase;
-                updateHighlighter();
+                // Highlighting is more complex with contenteditable, so we'll skip direct highlighting for now to focus on editing.
+                console.log(`Highlighting for "${phrase}" can be implemented later.`);
             });
             densityListEl.appendChild(item);
         });
     };
-
-    const updateHighlighter = () => {
-        const text = textInput.value;
-        let highlightedText = escapeHTML(text);
-
-        if (currentHighlightedPhrase) {
-            const regex = new RegExp(escapeRegExp(currentHighlightedPhrase), 'gi');
-            highlightedText = highlightedText.replace(regex, (match) => `<span class="highlight">${match}</span>`);
-        }
-        
-        highlighter.innerHTML = highlightedText + '\n'; // Add trailing newline for scroll sync
+    
+    // --- RIBBON FUNCTIONALITY ---
+    const formatDoc = (command, value = null) => {
+        textInput.focus();
+        document.execCommand(command, false, value);
     };
 
-    // --- EVENT LISTENERS ---
-    textInput.addEventListener('input', () => {
-        analyzeText();
-        localStorage.setItem('savedText', textInput.value); // Save text on input
-    });
-    
-    // Sync scrolling
-    textInput.addEventListener('scroll', () => {
-        highlighter.scrollTop = textInput.scrollTop;
-        highlighter.scrollLeft = textInput.scrollLeft;
+    const ribbonButtons = [
+        { id: 'btn-undo', command: 'undo' },
+        { id: 'btn-redo', command: 'redo' },
+        { id: 'btn-bold', command: 'bold' },
+        { id: 'btn-italic', command: 'italic' },
+        { id: 'btn-underline', command: 'underline' },
+        { id: 'btn-strikethrough', command: 'strikethrough' },
+        { id: 'btn-align-left', command: 'justifyLeft' },
+        { id: 'btn-align-center', command: 'justifyCenter' },
+        { id: 'btn-align-right', command: 'justifyRight' },
+        { id: 'btn-align-justify', command: 'justifyFull' },
+        { id: 'btn-ordered-list', command: 'insertOrderedList' },
+        { id: 'btn-unordered-list', command: 'insertUnorderedList' },
+    ];
+
+    ribbonButtons.forEach(btnConfig => {
+        const button = document.getElementById(btnConfig.id);
+        if (button) {
+            button.addEventListener('click', () => formatDoc(btnConfig.command));
+        }
     });
 
-    // Tab switching for keyword density
+    // Update button states (e.g., bold button should look active if text is bold)
+    const updateButtonStates = () => {
+        const toggleCommands = ['bold', 'italic', 'underline', 'strikethrough'];
+        toggleCommands.forEach(command => {
+            const button = document.getElementById(`btn-${command}`);
+            if (button) {
+                if (document.queryCommandState(command)) {
+                    button.classList.add('is-active');
+                } else {
+                    button.classList.remove('is-active');
+                }
+            }
+        });
+    };
+
+
+    // --- EVENT LISTENERS ---
+    textInput.addEventListener('input', analyzeText);
+    textInput.addEventListener('keyup', updateButtonStates);
+    textInput.addEventListener('mouseup', updateButtonStates);
+
     densityTabsContainer.addEventListener('click', (e) => {
         if (e.target.tagName === 'BUTTON') {
             densityTabsContainer.querySelector('.active').classList.remove('active');
             e.target.classList.add('active');
             currentNgramSize = parseInt(e.target.dataset.ngram, 10);
-            currentHighlightedPhrase = null; // Clear highlight on tab switch
             analyzeText(); // Re-analyze with new N-gram size
         }
     });
 
     // --- INITIALIZATION ---
-    // Restore saved text from localStorage
-    textInput.value = localStorage.getItem('savedText') || '';
+    const savedText = localStorage.getItem('savedText');
+    if (savedText) {
+        textInput.innerHTML = savedText; // Load HTML from storage
+    } else {
+        // Add some placeholder content
+        textInput.innerHTML = '<h2>Welcome to Your New Editor!</h2><p>Start typing here. You can use the buttons above to <b>format</b> your text.</p>';
+    }
     
-    // Perform initial analysis on page load for any restored text
+    // Perform initial analysis on page load
     analyzeText();
+    updateButtonStates();
 });
