@@ -4,7 +4,7 @@
 -------------------------------------------------- */
 :root {
     --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    --bg-primary: #f4f7f9;
+    --bg-primary: #000000;
     --bg-secondary: #ffffff;
     --border-color: #e2e8f0;
     --text-primary: #1a202c;
@@ -12,7 +12,7 @@
     --accent-primary: #4299e1;
     --accent-highlight: #fff2ab; /* Softer yellow for density highlight */
     --shadow-color: rgba(0, 0, 0, 0.05);
-    --border-radius: 8px;
+    --border-radius: 50px;
     --transition-speed: 0.2s;
 }
 *, *::before, *::after { box-sizing: border-box; }
@@ -139,10 +139,10 @@ body {
     height: 70vh;
     padding: 1.5rem 2rem;
     font-family: "Georgia", serif; /* Default font */
-    font-size: 16px;
+    font-size: 20px;
     line-height: 1.7;
     background-color: var(--bg-secondary);
-    border: 1px solid var(--border-color);
+    border: 3px solid var(--border-color);
     border-bottom-left-radius: var(--border-radius);
     border-bottom-right-radius: var(--border-radius);
     box-shadow: 0 4px 6px -1px var(--shadow-color);
@@ -164,14 +164,14 @@ body {
 .sidebar { flex: 2; min-width: 320px; }
 .sidebar-section {
     background-color: var(--bg-secondary);
-    border: 1px solid var(--border-color);
+    border: 5px solid var(--border-color);
     border-radius: var(--border-radius);
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     box-shadow: 0 4px 6px -1px var(--shadow-color);
 }
 .sidebar-section summary {
     font-weight: 600; cursor: pointer; padding: 1rem 1.5rem;
-    border-bottom: 1px solid var(--border-color); list-style: none; position: relative;
+    border-bottom: 2px solid var(--border-color); list-style: none; position: relative;
     transition: background-color var(--transition-speed) ease;
 }
 .sidebar-section summary:hover { background-color: #fafdff; }
